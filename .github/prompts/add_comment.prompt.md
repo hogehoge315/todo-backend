@@ -1,5 +1,6 @@
 ---
-agent: codeExplainer
+agent: agent
+description: 'ソースコード初心者向け説明ワークフロー'
 ---
 
 # ソースコード初心者向け説明ワークフロー

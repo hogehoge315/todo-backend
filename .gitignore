@@ -3,3 +3,4 @@
 
 # ライブラリ
 .venv/
+app/__pycache__
