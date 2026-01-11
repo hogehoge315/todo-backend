@@ -1,0 +1,17 @@
+services:
+  mysql: # サービス名 
+    image: mysql:8.4
+    # build: ./rails_project #　Dockerfileがあるディレクトリへの相対パス
+    container_name: todo-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: todo_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306" # ホストマシンのポート番号:コンテナのポート番号
+    volumes:
+      - mysql_data:/var/lib/mysql #　ホストディレクトリ : コンテナ内ディレクトリ
+
+volumes:
+  mysql_data:
