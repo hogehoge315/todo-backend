@@ -2,7 +2,7 @@
 # 例えば、タイトルの最大長や必須項目などのバリデーションをここで行います。
 
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 
 # @dataclassを作ることで、Pythonにこのクラスはデータを保持するためのものであることを伝えます。
@@ -29,3 +29,14 @@ class Todo:
             raise ValueError("title must be <= 200 characters")
         # バリデーションを通過したら、idは0（未保存状態を示す）、is_doneはFalseでTodoインスタンスを生成して返す
         return Todo(id=0, title=normalized, is_done=False)
+
+    def rename(self, title: str) -> "Todo":
+        normalized = title.strip()
+        if not normalized:
+            raise ValueError("title must not be empty")
+        if len(normalized) > 200:
+            raise ValueError("title must be <= 200 characters")
+        return replace(self, title=normalized)
+
+    def set_done(self, is_done: bool) -> "Todo":
+        return replace(self, is_done=is_done)

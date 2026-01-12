@@ -39,3 +39,23 @@ class SqlAlchemyTodoRepository(
         return [
             Todo(id=row.id, title=row.title, is_done=row.is_done) for row in rows
         ]  # ドメインのTodoのリストを返す
+
+    def update(self, todo: Todo) -> Todo:
+        "既存のTodoを更新するメソッドの実装"
+        stmt = select(TodoModel).where(TodoModel.id == todo.id)
+        row = self._db.execute(
+            stmt
+        ).scalar_one_or_none()  # one_or_noneは、該当する行がなければNoneを返す
+
+        if row is None:
+            raise ValueError(f"Todo with id {todo.id} does not exist")
+
+        # ドメインのTodoの状態をDBの行に反映
+        row.title = todo.title
+        row.is_done = todo.is_done
+
+        # セッションに変更を反映
+        self._db.flush()
+
+        # 更新後のTodoを返す
+        return Todo(id=row.id, title=row.title, is_done=row.is_done)
