@@ -30,15 +30,10 @@ class SqlAlchemyTodoRepository(
         )  # ドメインのTodoを返す
 
     def list(self) -> list[Todo]:  # Todoの一覧を取得するメソッドの実装
-        stmt = select(TodoModel)  # TodoModelを選択するSQL文を作成 stmtはstatementの略
-        rows = (
-            self._db.execute(stmt)  # executeでSQLを実行
-            .scalars()  # scalars()で結果をオブジェクトに変換
-            .all()  # all()で全件取得
-        )  # SQLAlchemyのセッションで実行して結果を取得
-        return [
-            Todo(id=row.id, title=row.title, is_done=row.is_done) for row in rows
-        ]  # ドメインのTodoのリストを返す
+        # 論理削除されていないもののみ返す
+        stmt = select(TodoModel).where(TodoModel.deleted_at == None)
+        rows = self._db.execute(stmt).scalars().all()
+        return [Todo(id=row.id, title=row.title, is_done=row.is_done) for row in rows]
 
     def update(self, todo: Todo) -> Todo:
         "既存のTodoを更新するメソッドの実装"
@@ -59,3 +54,15 @@ class SqlAlchemyTodoRepository(
 
         # 更新後のTodoを返す
         return Todo(id=row.id, title=row.title, is_done=row.is_done)
+
+    def delete(self, id: int) -> None:
+        "Todoを論理削除するメソッドの実装 (deleted_atをセット)"
+        from datetime import datetime
+
+        stmt = select(TodoModel).where(TodoModel.id == id)
+        row = self._db.execute(stmt).scalar_one_or_none()
+        if row is None:
+            raise ValueError(f"Todo with id {id} does not exist")
+        row.deleted_at = datetime.utcnow()
+        self._db.flush()
+        self._db.commit()

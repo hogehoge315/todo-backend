@@ -44,3 +44,10 @@ class TodoUseCase:
         except Exception:
             self._db.rollback()
             raise
+
+    def delete(self, id: int) -> None:
+        try:
+            self._repo.delete(id)
+        except Exception:
+            self._db.rollback()
+            raise

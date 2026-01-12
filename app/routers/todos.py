@@ -13,6 +13,20 @@ from app.usecases.todo_usecase import TodoUseCase
 router = APIRouter(prefix="/todos", tags=["todos"])
 
 
+# 削除エンドポイント
+from fastapi import Response
+
+
+@router.delete("/{id}", status_code=204)
+def delete_todo(id: int, db: Session = Depends(get_db)):
+    uc = TodoUseCase(db)
+    try:
+        uc.delete(id)
+        return Response(status_code=204)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+
 @router.post("", response_model=TodoResponse, status_code=201)
 def create_todo(req: TodoCreateRequest, db: Session = Depends(get_db)) -> TodoResponse:
     uc = TodoUseCase(db)
