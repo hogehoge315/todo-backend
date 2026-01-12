@@ -1,18 +1,11 @@
-from fastapi import FastAPI, Depends
-from sqlalchemy import text
-from sqlalchemy.orm import Session
+from fastapi import FastAPI
 
-from app.database import get_db
+from app.database import engine
+from app.models.todo import Base
+from app.routers.todos import router as todo_router
 
 app = FastAPI()
 
+app.include_router(todo_router)
 
-@app.get("/")
-def hello():
-    return {"message": "Hello, World!"}
-
-
-@app.get("/health/db")
-def health_db(db: Session = Depends(get_db)):
-    db.execute(text("SELECT 1"))
-    return {"ok": True}
+Base.metadata.create_all(bind=engine)
