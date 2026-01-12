@@ -1,3 +1,4 @@
+from datetime import datetime
 from sqlalchemy import Boolean, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
@@ -17,6 +18,3 @@ class TodoModel(Base):
     title: Mapped[str] = mapped_column(String(200), nullable=False)
     is_done: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     deleted_at: Mapped[datetime | None] = mapped_column(nullable=True)
-
-
-from datetime import datetime
